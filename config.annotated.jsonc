@@ -1,4 +1,4 @@
-// api-sse-probe v1.16.0 | Tencent Sheet configuration reference (JSONC).
+// api-sse-probe | 当前配置字段说明（JSONC；不是可执行配置）。
 // This is documentation, NOT an executable configuration file.
 // config.local.json is strict JSON; remove ALL comment lines before use.
 // No actual token, Webhook, business URL or document identifier is included.
@@ -49,7 +49,7 @@
     // tencent: used only if source.type is "tencent"; absent for csv/json.
     "tencent": {
       // doc_url: authorized sheet URL, including the correct ?tab= value.
-      "doc_url": "https://docs.qq.com/sheet/EXAMPLE_FILE_ID?tab=EXAMPLE_TAB",
+      "doc_url": "https://docs.qq.com/sheet/EXAMPLEID123?tab=EXAMPLETAB",
       // file_id: currently keep aligned with doc_url; affects existing latest-failed-sse target hash.
       "file_id": "EXAMPLEID123",
       // sheet_id: explicit tab identifier; also used to build the Feishu source link.

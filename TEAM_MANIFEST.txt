@@ -1,4 +1,4 @@
-# Public reviewed manifest; no private files.
+# Reviewed public Skill files; no history, credentials or reports.
 LICENSE
 README.md
 SKILL.md
@@ -7,24 +7,13 @@ assets/sample_cases.csv
 assets/sample_response.sse
 config.annotated.jsonc
 config.example.json
-docs/governance/README.md
-docs/governance/acceptance-matrix.md
-docs/governance/current-v2.4.3.md
-docs/governance/deterministic-assertion-v2.3-design.md
-docs/governance/feedback-loop.md
 examples/feishu_notifications/sample_probe.json
 examples/feishu_notifications/sample_probe_group.json
 examples/feishu_notifications/sample_rss.json
-references/acceptance.md
-references/agent-handoff.md
 references/architecture.md
 references/assertions.md
 references/configuration.md
 references/feishu-notification.md
-references/monitoring-report.md
-references/output-adapters.md
-references/team-generalization-roadmap.md
-references/team-installation.md
 references/timeout-and-diagnostics.md
 references/troubleshooting.md
 scripts/build_release.py

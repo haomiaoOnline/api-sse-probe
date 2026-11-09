@@ -39,7 +39,7 @@
     // Optional defaults omitted here: expected_http_status=200.
     // timestamp is generated automatically per POST (Unix milliseconds); never configure a stale timestamp.
   },
-  // v1.13.0: --source-url 'https://docs.qq.com/sheet/<ID>?tab=<TAB>'
+  // --source-url 'https://docs.qq.com/sheet/<ID>?tab=<TAB>'
   // overrides doc_url/file_id/sheet_id/sheet_name for ONE run without editing this file.
   // --no-feishu disables notification for that run; --check is optional.
   // source: specify exactly one case provider (csv, json or tencent).
@@ -91,7 +91,7 @@
   "assertions": {
     // require_keywords (default true): fail cases with no expected assertion; keep explicit for safety.
     "require_keywords": true
-    // default_mode is obsolete in v1.9.0; per-case match_mode controls all/any.
+    // 单用例使用 match_mode 控制 all/any；必需条件建议保持 all。
   },
   // reports: private local reporting and failed SSE retention limits.
   "reports": {

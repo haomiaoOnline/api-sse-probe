@@ -9,7 +9,9 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-import probe_v2
+import probe
+from lib import v2_engine as probe_v2  # current implementation, no obsolete CLI wrapper
+probe_v2.probe = probe  # test-only monkeypatch surface
 from lib.case_snapshot import freeze_cases
 from lib.v2_repository import RunStore
 from lib.v2_rejudge import judge_case

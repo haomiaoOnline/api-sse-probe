@@ -39,7 +39,7 @@ HEADERS = {"powerkey": "redacted-test", "signature": "redacted-test"}
 API = {"url": "https://test.example/chat", "headers": HEADERS,
        "require_done": True}
 CASE = {"case_id": "TV001", "content": "打开湖南卫视直播", "deviceId": "device",
-        "expected_keywords": ["视频技能", "VIDEO30BFF29645B2B2E2EB6C44AE7"],
+        "expected_keywords": ["视频技能", "VIDEO_TEST_FIXTURE_001"],
         "forbidden_keywords": [], "match_mode": "all", "endpoint": {}, "session": {}}
 
 def response_lines(*frames, done=True):
@@ -52,7 +52,7 @@ def response_lines(*frames, done=True):
     return lines
 
 SUCCESS = {"choices": [{"delta": {"content": {
-    "type": "3", "data": {"jsonHeader": '{"skillId":"VIDEO30BFF29645B2B2E2EB6C44AE7"}',
+    "type": "3", "data": {"jsonHeader": '{"skillId":"VIDEO_TEST_FIXTURE_001"}',
                          "jsonBody": '{"params":{"videoStr":"视频技能"}}'}}}}]}
 OTHER = {"choices": [{"delta": {"content": {"type": "1", "data": {"text": "hello"}}}}]}
 
@@ -183,7 +183,7 @@ class ProbeTests(unittest.TestCase):
         self.assertEqual(r["reason"], "configuration_error")
 
     def test_tencent_missing_credentials(self):
-        from lib.tencent import TencentError, read_values
+        from lib.tencent_mcp import TencentMCPError as TencentError, read_values
         with patch.dict(os.environ, {}, clear=True):
             with self.assertRaises(TencentError):
                 read_values({"file_id":"file1","sheet_id":"sheet1"})

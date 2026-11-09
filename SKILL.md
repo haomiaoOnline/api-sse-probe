@@ -1,88 +1,77 @@
 ---
 name: api-sse-probe
-description: 对已授权的 HTTPS JSON→SSE 接口进行批量拨测，使用确定性断言校验结果，保存完整证据并生成私有报告；支持 CSV、JSON、腾讯文档与飞书表格只读用例源。
+description: 为 Agent 安装并配置授权的 HTTPS JSON→SSE 批量拨测器。读取 CSV/JSON/腾讯文档/飞书表格，确定性断言、私有 SSE 证据、离线复判和可选飞书通知。
 license: MIT
-compatibility: Python 3.9+；标准库，无 pip 依赖；联网功能需相应接口及文档授权
+compatibility: Python 3.9+；macOS/Linux；标准库无 pip 依赖；线上读取与拨测需用户授权
 metadata:
-  version: "2.4.3"
+  version: "2.5.0"
 ---
 
 # api-sse-probe
 
-读取测试用例 → 检查判断依据 → 串行发送 HTTPS 请求 → 保存 SSE 原始证据 → 离线判定 PASS/FAIL/ERROR → 生成报告并按配置通知。
+**唯一正式入口：** `scripts/probe.py`。本 Skill 是完整目录，不是单独的提示词。执行流程：读取用例 → 请求前验证规则 → 冻结快照 → 串行 HTTPS SSE 拨测 → 保存原始证据 → 离线判定 → 私有报告 → 按授权通知。
 
-**唯一正式执行入口：** `scripts/probe.py`。本文件供 Agent 决定如何调用 Skill；**不能单独执行**。安装时必须使用包含 `scripts/`、`references/`、`config.example.json` 的完整目录或审核过的发布 ZIP。
+## Agent 安装任务：从零到可用
 
-## 使用前提
+用户说“安装 api-sse-probe”“接入测试表”“用这个 Skill 拨测”时，按以下顺序执行；**安装和真实请求是两次独立授权**。
 
-1. 只拨测用户授权的接口和用例；目标必须是受支持的 HTTPS POST JSON → SSE 协议，不自动适配任意 REST API。
-2. 在项目根目录复制 `config.example.json` 为 `config.local.json`，填写**自己的** API 地址、`powerkey`、`signature`、数据源和可选飞书授权。该文件只能保存在本机，不加入 Git/发布包。
-3. `config.local.json` 是标准 JSON；字段含义见 [配置说明](references/configuration.md) 和 [注释模板](config.annotated.jsonc)。示例文件没有真实凭据，不能直接发起生产拨测。
-4. 当前 `signature` 按配置值原样发送，不自动计算；必须验证 TLS。macOS/Linux 已有执行路径，**Windows 原生运行和断电恢复未完成验证**。
+1. **检查环境**：识别 OS、Python 版本、Git、网络访问及 Agent 实际 Skills 根目录。需要 Python ≥3.9、Git（从 GitHub 安装时）；Python 运行仅依赖标准库，**无需 pip、Node、mcporter 或独立腾讯文档 MCP 插件**。缺少工具时先说明官方安装方式，涉及 sudo/系统变更需用户授权。Windows 原生 v2 运行尚未验收，不自动进行真实拨测。
+2. **获取完整源码**：已有完整本地目录则复用；只有本文时必须获取整个仓库，不能凭空编造脚本。公开源：`https://github.com/haomiaoOnline/api-sse-probe`，只使用审核过的版本；不要运行来历不明的远程 shell 脚本。
+3. **执行安装**：查明 Agent 的真实 Skills 根目录（不要猜测）并安装完整发布清单，拒绝覆盖已有安装：
 
-## 执行命令
+   ```bash
+   git clone --depth 1 https://github.com/haomiaoOnline/api-sse-probe.git
+   cd api-sse-probe
+   python3 scripts/check_skill_contract.py
+   python3 scripts/install.py --target "/path/to/AGENT_SKILLS_ROOT"
+   cd "/path/to/AGENT_SKILLS_ROOT/api-sse-probe"
+   ```
 
-在 Skill 根目录运行：
+4. **引导提供信息**：先问用例来源是 CSV、JSON、腾讯文档还是飞书表格，以及是否需要飞书群通知；只问非敏感选择。引导用户从**自己本机的交互式终端**启动向导，凭据用隐藏输入，不要让用户在聊天窗口发送 Token、powerkey、signature、App Secret、Webhook 或私有接口地址：
+
+   ```bash
+   python3 scripts/setup.py init --source tencent   # 也支持 csv / json / feishu
+   python3 scripts/setup.py doctor
+   ```
+
+   若 `config.local.json` 已存在，**不得覆盖**，只执行 `doctor` 并在用户同意后更新其私人配置。向导只创建 `0600` 私有 JSON，不发网络请求；默认**禁用飞书通知和云归档**。
+5. **先只读验收**：`doctor` 输出 `READY_OFFLINE` 表示本机结构/凭据存在，**并不证明线上授权有效**。在用户允许读取测试表后执行 `python3 scripts/probe.py --check`，确认表格权限、列映射和有效用例数量；此步骤不发业务 POST、不发飞书。
+6. **真实拨测单独确认**：向用户说明目标环境、测试表、有效用例数量、是否通知以及重复执行风险，获得授权后再运行 `python3 scripts/probe.py`。不得因为安装成功自行触发接口。
+
+详细安装、升级和平台选择：[安装指南](references/installation.md)。
+
+## 关键信息从哪里获取
+
+| 项目 | 获取途径与用途 |
+| --- | --- |
+| 业务 API URL / `powerkey` / `signature` | 向**业务 API 提供方或网关负责人**申请已授权的 HTTPS SSE 测试接口和鉴权参数；本 Skill 不生成动态 signature |
+| 腾讯文档 MCP Token | 登录 [腾讯文档官方授权页](https://docs.qq.com/open/auth/mcp.html)，复制个人 Token；**不是**腾讯云 API 密钥，不能靠浏览器 Cookie 代替 |
+| 腾讯测试表 | 从腾讯文档复制含 `?tab=` 的完整 Sheet 链接，确认该 Token 所属账号有读取权限 |
+| 飞书表格 App ID / Secret | 登录 [飞书开放平台](https://open.feishu.cn/app)，创建/选择企业自建应用，在“凭证与基础信息”读取；还要单独开通表格读取权限和文件访问权限 |
+| 飞书群通知 Webhook / Secret | 在目标群设置 → 群机器人 → 自定义机器人，获取 Webhook，启用签名与关键词；详见[官方指南](https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot?lang=zh-CN) |
+
+当前腾讯文档读取器内置 `https://docs.qq.com/openapi/mcp` 的只读 `sheet.get_sheet_info` / `sheet.get_cell_data` 调用，发送 `Authorization: <个人Token>`；无需另装 MCP 服务。**不要在日志或聊天中打印该请求头**。
+
+## 运行规范
 
 ```bash
-# 使用私有配置中的默认用例源，正常执行
-python3 scripts/probe.py
-
-# 明确指定本轮测试表（不会覆盖本地配置）
-python3 scripts/probe.py --source-url 'https://docs.qq.com/sheet/EXAMPLE_FILE_ID?tab=EXAMPLE_TAB'
-
-# 只检查用例、列映射和断言；不发送业务 POST 或群通知
-python3 scripts/probe.py --check
-
-# 只执行用户指定的真实用例编号
-python3 scripts/probe.py --case-id 123
-
-# 中断后使用命令输出的 resume_command 继续
-# python3 scripts/probe.py --run-dir <实际运行目录>
+python3 scripts/probe.py --check                  # 用户授权的只读检查
+python3 scripts/probe.py                          # 使用私有配置执行
+python3 scripts/probe.py --source-url '<授权的完整表格链接>'
+python3 scripts/probe.py --case-id 123            # 仅指定用例
+python3 scripts/probe.py --no-feishu              # 明确要求不通知时
+python3 -B -m unittest discover -s tests -q      # 离线回归
 ```
 
-用户明确提供带 `tab=` 的测试表并要求“拨测整表”时，按配置读取范围内**全部启用、有效的用例**执行；不要擅自缩小范围，也不必无故重复要求用户先运行 `--check`。指定少量用例时严格遵守指定范围。腾讯文档通过 MCP 只读，飞书表格通过获授权的读取接口；不写回原测试表。
+- 用户给定带 `tab=` 的腾讯文档并要求整表拨测时，按配置读取范围内**全部启用且有效用例**处理；无故不重复要求用户先做 `--check` 或自行改变数量限制。表格只读，不写回“响应结果”。
+- **公共判断依据 + 特殊判断依据默认全部满足**；内部的“或”是精确 OR。 `文本回复包含“暂停”` 对“无法暂停播放”仍为真，不代表真实暂停成功。规则不清楚或不支持时在 POST 前拒绝。语法见[判断依据](references/assertions.md)。
+- HTTP、SSE 完整性、`[DONE]`（若要求）和业务断言分别校验，缺失证据不能冒充 PASS。按实际保存的 SSE 离线判定，给出明确失败项。
+- 默认串行执行并保存原始证据；中断后只使用程序返回的 `resume_command`。`UNKNOWN` 不能推断结果；仅新运行明确设置 `unknown_retry.enabled=true` 才允许至多补测一次，可能重复触发业务动作。
+- 飞书通知仅在用户配置启用时发送；云端归档还需另外的应用授权、脱敏及权限校验。未脱敏原始 SSE、语料和 Header 只留在私有本地。
 
-正式执行默认采用已授权的飞书通知配置；**只有用户明确要求不通知时**才附加 `--no-feishu`（同时禁止云归档）。未配置有效通知目标时应明确报错，不自行选择群组。
+## 安全与交付标准
 
-## 判断依据
-
-测试表的 **“判断依据（公共）”** 和 **“特殊判断依据”** 都是必需条件来源；默认**全部满足（AND）**才算业务通过。两列的“同上”分别继承本列上一个有效值。表中的既有“响应结果”不作为本次判定依据。
-
-| 表格填写示例 | 实际判定 |
-| --- | --- |
-| `HTTP 200 / 文本回复` | HTTP 状态为 200，且助手有非空正文 |
-| `文本回复包含“暂停”` | 助手正文含字面子串“暂停” |
-| `文本回复包含“暂停”或“停止”` | 两个关键词至少命中一个（OR） |
-| `回复中包含“杭州”和“天气”` | 两个关键词都命中（AND） |
-| `回复中不包含“播放失败”` | 助手正文不能出现该子串 |
-| `title是“灵犀服务”` | 真实业务标题精确匹配 |
-| `skillId是“VIDEO123”` | 实际业务字段中的 ID 精确匹配 |
-| `deeplink以“cmcc://example”开头` | 实际结构化字段前缀匹配 |
-
-**只做程序化的字面和结构化字段校验，不做 AI 意图推测。** 例如“无法暂停播放”包含“暂停”，所以单纯包含规则通过；“已停止当前视频”不含“暂停”，需明确写成“暂停”或“停止”才通过。含糊、不支持或格式错误的判断依据应在业务请求前拒绝，绝不能静默丢弃规则、将 HTTP 200 当成业务成功。更详细的语法见 [断言说明](references/assertions.md)。
-
-## 运行、结果与恢复
-
-- 每条请求先记录执行意图，再保存实际接收的 SSE 原始字节、HTTP 信息和证据摘要；之后由离线断言引擎复判，不靠模型分析返回文本。
-- 协议层先校验 HTTP 状态、SSE JSON 业务帧及要求的 `[DONE]`；证据不足不能判为 PASS。
-- `PASS`：全部必需条件满足；`FAIL`：有协议或断言失败；`ERROR`：请求/执行异常。外部状态为 `UNKNOWN` 时必须明确告知不能判断业务结果。
-- 默认一次启动串行完成所有有效用例。若返回 `workflow_status=CONTINUE_REQUIRED`，按照输出的 `resume_command` 续跑；不猜测已发出但结果未知的请求状态。
-- `unknown_retry.enabled=true` **只对新建运行有效**：允许下一次恢复时对 UNKNOWN 最多自动重试一次；可能使同一业务动作执行两次，只有用户接受此风险的场景才启用。再次未知需人工核对。
-- 原始 SSE 和完整语料保存在受限本地报告/证据目录。可选飞书云文档归档只在获得授权、内容脱敏及只读权限核验完成后执行；群消息发送摘要和链接，不发送未脱敏原始响应。未完成批次只能出明确标注的非正式报告。
-
-## 安全及人工确认
-
-- **不得提交或分享敏感信息**：真实 Token、`powerkey`、`signature`、Webhook、App Secret、API 地址、设备标识、私有文档 ID、`config.local.json`、`.env`、`reports/`、SQLite 或真实 SSE。
-- 不关闭 TLS 验证；不发起未授权请求；不把真实响应写回原始腾讯/飞书测试表。
-- 重要断言规则修改、正式发布或改写/删除已有证据前需要人工确认。失败时保留实际日志和错误原因，不假报成功。
-- 离线测试可运行 `python3 -B -m unittest discover -s tests -q`，但不得把测试用例或模拟结果冒称真实拨测验收。
-
-## 参考文件
-
-- [安装与使用配置](references/configuration.md)
-- [断言语法与边界](references/assertions.md)
-- [当前架构和工作流](references/architecture.md)
-- [网络超时与排障](references/timeout-and-diagnostics.md)
-- [飞书通知](references/feishu-notification.md)
-- [常见问题](references/troubleshooting.md)
+- **绝不上传/分享**个人 Token、`powerkey`、`signature`、App Secret、Webhook、API 地址、设备 ID、私有表格链接、`config.local.json`、`.env`、`reports/`、数据库和原始 SSE。
+- 更新已有安装前先备份个人配置与私有报告；安装器拒绝覆盖现有 Skill。凭据错误只输出错误代码，不回显值；不关闭 TLS。
+- 交付必须报告：安装路径、检查项状态、数据源类型、有效用例数（经过线上只读检查才有）、真实请求是否执行、报告位置及通知状态；未做的验收不得声称完成。
+- 重要规则变更、正式发布和影响历史证据的操作需要人工确认。独立完整安装参见 [安装指南](references/installation.md)，架构参见 [工作流](references/architecture.md)，排障参见 [问题定位](references/troubleshooting.md)。

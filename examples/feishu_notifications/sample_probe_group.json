@@ -3,7 +3,7 @@
   "source": "api-sse-probe",
   "status": "error",
   "chart_type": "none",
-  "source_url": "https://docs.qq.com/sheet/EXAMPLE_FILE_ID?tab=EXAMPLE_TAB",
+  "source_url": "https://docs.qq.com/sheet/EXAMPLEDOC123?tab=demo123",
   "metrics": [
     {
       "label": "总数",

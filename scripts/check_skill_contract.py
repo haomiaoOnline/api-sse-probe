@@ -11,7 +11,8 @@ REQUIRED = {
     'scripts/probe.py', 'scripts/lib/unified_workflow.py',
     'scripts/lib/rule_contract.py', 'scripts/lib/v2_rejudge.py',
     'scripts/lib/feishu_transport.py', 'scripts/install.py',
-    'scripts/check_skill_contract.py', 'references/architecture.md',
+    'scripts/check_skill_contract.py', 'scripts/setup.py', 'tests/test_setup.py',
+    'references/installation.md', 'SECURITY.md', 'references/architecture.md',
     'references/assertions.md', 'references/configuration.md',
 }
 FORBIDDEN_PREFIXES = ('reports/', 'artifacts/', 'api-sse-probe/', 'docs/governance/')
@@ -37,7 +38,7 @@ def validate(root):
     read('scripts/lib/unified_workflow.py')
 
     version = re.search(r'(?m)^  version: "([^"]+)"$', skill)
-    if not version or version.group(1) != '2.4.3':
+    if not version or version.group(1) != '2.5.0':
         errors.append('unexpected_root_skill_version')
     if 'scripts/probe.py' not in skill or '判断依据' not in skill or '安全' not in skill:
         errors.append('current_execution_contract_missing')

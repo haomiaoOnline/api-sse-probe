@@ -23,10 +23,16 @@ flowchart TD
   M --> N["按授权配置生成飞书归档与通知"]
 ```
 
+## 首次安装与配置
+
+`install.py` 只安装经审核的代码和模板，**不**复制私有 Token；用户在本机使用 `setup.py init` 生成受限配置，再用 `setup.py doctor` 做不联网检查。权限确认后用 `probe.py --check` 只读校验测试表，获得真实拨测授权后才走下列执行链。
+
 ## 主要文件
 
 | 文件 | 职责 |
 | --- | --- |
+| `scripts/setup.py` | 私有配置向导和零联网本机诊断 |
+| `scripts/install.py` | 按发布清单安装，不覆盖旧安装或私人文件 |
 | `scripts/probe.py` | 用户命令入口、用例读取、HTTP/SSE 解析及采集辅助 |
 | `scripts/lib/unified_workflow.py` | 一次运行、续跑、选取用例、报告与通知的统一编排 |
 | `scripts/lib/rule_contract.py` | 请求前确定性验证和编译规则 |

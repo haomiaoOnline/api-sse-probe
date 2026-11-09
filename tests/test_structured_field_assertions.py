@@ -25,7 +25,7 @@ def run(expected, *frames):
     return probe.run_case(case, API, opener=FakeOpener(response_lines(*frames)))
 
 
-VIDEO_SKILL = 'VIDEO30BFF29645B2B2E2EB6C44AE7'
+VIDEO_SKILL = 'VIDEO_TEST_FIXTURE_001'
 NEWS_RULE = '包含“新闻联播”“CCTV1”，skillId 是"{}"'.format(VIDEO_SKILL)
 SICHUAN_RULE = '包含“四川卫视”，skillId 是"{}"'.format(VIDEO_SKILL)
 
@@ -162,7 +162,7 @@ class StructureAndQuoteTests(unittest.TestCase):
         self.assertEqual(missing['status'], 'FAIL')
         self.assertIn('新闻联播', missing['failure_assertions'][0]['actual'])
         different_frame = run([SICHUAN_RULE], video_control('OTHER', 'OTHER'),
-                              frame({'text': '四川卫视 VIDEO30BFF29645B2B2E2EB6C44AE7'}))
+                              frame({'text': '四川卫视 VIDEO_TEST_FIXTURE_001'}))
         self.assertEqual(different_frame['status'], 'FAIL')
 
     def test_title_content_compound_checks_real_answer_fields(self):

@@ -103,8 +103,8 @@
   },
   // feishu: custom group bot notifications, separate from report outputs.
   "feishu": {
-    // enabled: true by default; configure an authorized group Webhook and secret before a real probe.
-    "enabled": true,
+    // enabled: false by default; use true only after user authorizes notification.
+    "enabled": false,
     // WEBHOOK_URL: authorized group bot Webhook; do not paste private values into public examples.
     "WEBHOOK_URL": "",
     // SECRET: Feishu group bot signing secret, NOT the business API signature.

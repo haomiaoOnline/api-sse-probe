@@ -1,36 +1,40 @@
-# Runtime and private auth configuration
-.env
-.env.*
-!.env.example
+# Private credentials / local configuration. Never commit real values.
 config.json
 config.local.json
 config.*.local.json
 config.*.local.*
+.env
+.env.*
+!.env.example
+secrets/
 **/secrets/
 **/credentials/
+*.credentials
+*.token
+*.secret
 *.pem
 *.key
 *.p12
 *.pfx
-*.token
-*.credentials
+
+# Private runtime data, raw SSE, reports and databases.
+reports/
+artifacts/
 *.sqlite
 *.sqlite3
 *.db
+*.db-*
 *.jsonl
+*.log
+*.pending
 *.xlsx
 *.xls
-*.log
 *.csv
 !assets/sample_cases.csv
 *.sse
 !assets/sample_response.sse
-# Raw evidence, reports, transient data and caches
-reports/
-artifacts/
-**/monitor_log/
-**/监测记录/
-**/报告/
+
+# Generated caches and local IDE files.
 __pycache__/
 *.pyc
 .pytest_cache/

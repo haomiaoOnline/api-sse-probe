@@ -1,6 +1,6 @@
 # 配置说明
 
-个人运行配置是 Skill 根目录下的 `config.local.json`（标准 JSON），**永远不要提交到 Git**。从无真实密钥的 `config.example.json` 复制，再按实际授权填写。需要逐参数说明时查看 [config.annotated.jsonc](../config.annotated.jsonc)；这是带注释的阅读模板，不是可直接运行的 JSON。
+个人运行配置是 Skill 根目录下的 `config.local.json`（标准 JSON），**永远不要提交到 Git**。**首次安装使用 `python3 scripts/setup.py init --source tencent` 等安全向导创建**；已有配置不得覆盖。只有无交互终端时才考虑用户本机手工复制 `config.example.json` 后安全编辑。需要逐参数说明时查看 [config.annotated.jsonc](../config.annotated.jsonc)；这是带注释的阅读模板，不是可直接运行的 JSON。
 
 ## 主要配置区
 
@@ -33,15 +33,18 @@
   "source": {"type": "csv", "path": "assets/sample_cases.csv"},
   "assertions": {"require_keywords": true},
   "reports": {"dir": "reports"},
-  "feishu": {"enabled": true, "keyword": "API拨测", "notification_style": "v2"},
+  "feishu": {"enabled": false, "keyword": "API拨测", "notification_style": "v2"},
   "report_outputs": [{"type": "file", "enabled": true}],
   "unknown_retry": {"enabled": false, "max_retries_per_case": 1}
 }
 ```
 
-以上仅演示配置**结构**，没有真实接口/凭据；默认启用群通知但未填写机器人时，不能直接正式拨测。
+以上仅演示配置**结构**，没有真实接口/凭据；首次安装默认关闭群通知；只有用户明确选择启用并提供安全 Webhook/签名后才发送。
 
 ## 使用说明
+
+- 安装与获取 Token 的完整步骤见 [Agent 安装指南](installation.md)，包括腾讯文档官方 MCP 授权页和飞书应用权限获取方法。
+- `python3 scripts/setup.py doctor` 不联网、不输出密钥；`READY_OFFLINE` 只是本地配置状态，并非 API/Token 真实可用证明。
 
 - 本轮提供 `--source-url '<已授权完整链接>'` 时，临时覆盖原来源的文档身份，不改写 `config.local.json`；仍遵循已配置的读取区间和列映射。
 - `--check` 只检查用例、映射和断言，不发送业务 POST 或通知。

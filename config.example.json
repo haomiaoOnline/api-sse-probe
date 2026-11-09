@@ -27,7 +27,7 @@
     "failed_sse_max_total_bytes": 134217728
   },
   "feishu": {
-    "enabled": true,
+    "enabled": false,
     "keyword": "API拨测",
     "notification_style": "v2"
   },
@@ -37,9 +37,6 @@
       "enabled": true
     }
   ],
-  "feishu_docs_auth": {
-    "credentials_file": "/path/to/private/feishu-app-credentials.txt"
-  },
   "feishu_archive": {
     "enabled": false,
     "domain": "example.feishu.cn",

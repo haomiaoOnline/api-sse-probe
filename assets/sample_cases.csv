@@ -1,3 +1,3 @@
 case_id,enabled,content,deviceId,expected_keywords,forbidden_keywords,match_mode,endpoint_json,session_json
-TV001,true,打开湖南卫视直播,replace-device-id,视频技能；VIDEO30BFF29645B2B2E2EB6C44AE7,,all,{},{}
+TV001,true,打开湖南卫视直播,replace-device-id,视频技能；VIDEO_TEST_FIXTURE_001,,all,{},{}
 TV002,false,最近热播的电视剧有哪些,replace-device-id,电视剧,,all,{},{}

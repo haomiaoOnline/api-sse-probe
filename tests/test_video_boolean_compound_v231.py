@@ -7,7 +7,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from lib.rule_contract import compile_rule
 from lib.assertion_rules import accumulate_signals,evaluate_assertions
 
-SKILL = 'VIDEO30BFF29645B2B2E2EB6C44AE7'
+SKILL = 'VIDEO_TEST_FIXTURE_001'
 RULE = '包含“四川”和（“频道”或“卫视”或“台”），skillId 是“'+SKILL+'”'
 
 

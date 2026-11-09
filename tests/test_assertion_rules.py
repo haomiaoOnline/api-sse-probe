@@ -87,7 +87,7 @@ class TypedAssertionTests(unittest.TestCase):
 
     def test_old_keyword_matching_unchanged(self):
         result=probe.run_case(CASE,API,opener=FakeOpener(response_lines(
-            {'choices':[{'delta':{'content':{'data':{'text':'视频技能 VIDEO30BFF29645B2B2E2EB6C44AE7'}}}}]})))
+            {'choices':[{'delta':{'content':{'data':{'text':'视频技能 VIDEO_TEST_FIXTURE_001'}}}}]})))
         self.assertEqual(result['status'],'PASS')
 
     def test_require_done_still_enforced(self):

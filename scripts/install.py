@@ -8,10 +8,10 @@ from pathlib import Path, PurePosixPath
 ROOT = Path(__file__).resolve().parents[1]
 SKILL_NAME = "api-sse-probe"
 MANIFEST = "TEAM_MANIFEST.txt"
-ROOT_FILES = {"SKILL.md", "README.md", "CHANGELOG.md", "LICENSE",
+ROOT_FILES = {".gitignore", "SKILL.md", "README.md", "SECURITY.md", "LICENSE",
               "config.example.json", "config.annotated.jsonc", MANIFEST}
 FOLDERS = {"scripts": {".py"}, "references": {".md"},
-           "assets": {".csv", ".json", ".sse", ".md"}, "docs": {".md"},
+           "assets": {".csv", ".json", ".sse", ".md"},
            "tests": {".py"}, "examples": {".json", ".md"}}
 
 def package_paths():
@@ -42,7 +42,8 @@ def package_paths():
     names = {p.as_posix() for _, p in paths}
     required = {MANIFEST, "SKILL.md", "config.example.json",
                 "scripts/probe.py", "scripts/lib/tencent_mcp.py",
-                "scripts/lib/feishu_transport.py", "scripts/install.py"}
+                "scripts/lib/feishu_transport.py", "scripts/install.py",
+                "scripts/setup.py", "scripts/check_skill_contract.py", "SECURITY.md", ".gitignore"}
     if not required.issubset(names):
         raise ValueError("required_package_entries_missing")
     return paths
@@ -65,10 +66,8 @@ def main(argv=None):
             destination = target / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source, destination)
-        config = target / "config.local.json"
-        shutil.copyfile(target / "config.example.json", config)
-        if os.name != "nt":
-            os.chmod(config, 0o600)
+        # No private config is created during installation. User runs
+        # scripts/setup.py init on the installed copy in a local terminal.
         print(str(target))
     except Exception:
         shutil.rmtree(target)

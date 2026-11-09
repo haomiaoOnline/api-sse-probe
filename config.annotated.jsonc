@@ -1,0 +1,128 @@
+// api-sse-probe v1.16.0 | Tencent Sheet configuration reference (JSONC).
+// This is documentation, NOT an executable configuration file.
+// config.local.json is strict JSON; remove ALL comment lines before use.
+// No actual token, Webhook, business URL or document identifier is included.
+// Omit optional fields only after comparing with the source / active profile.
+{
+  // api: the authorized HTTPS POST JSON → SSE endpoint.
+  "api": {
+    // url (required for real requests): authorized HTTPS SSE endpoint. Never silently choose prod.
+    "url": "https://example.com/api/sse",
+    // headers: business API authentication; never commit real credentials.
+    "headers": {
+      // powerkey (required): private API credential, use a secret manager or {"env":"MY_API_POWERKEY"}.
+      "powerkey": {"env": "MY_API_POWERKEY"},
+      // signature (required): supplied value; the current Skill DOES NOT auto-calculate dynamic signatures.
+      "signature": {"env": "MY_API_SIGNATURE"}
+    },
+    // connect_timeout_seconds (optional, default 8): bounded DNS/TCP/TLS/POST setup stages; NOT response headers.
+    "connect_timeout_seconds": 8,
+    // response_header_timeout_seconds (default 20): HTTP status + headers AFTER POST; separate from the SSE read timeout.
+    "response_header_timeout_seconds": 20,
+    // idle_timeout_seconds (optional, default 20): wait limit while reading an idle SSE stream.
+    "idle_timeout_seconds": 30,
+    // total_timeout_seconds (optional, default 60): per-case overall time limit, not the total batch limit.
+    "total_timeout_seconds": 90,
+    // require_done (optional, default true): reject SSE responses without the [DONE] event.
+    "require_done": true,
+    // max_event_bytes (optional, default 1048576): max size in bytes of a single SSE event.
+    "max_event_bytes": 1048576,
+    // max_response_bytes (optional, default 4194304): per-case raw SSE response size limit in bytes.
+    "max_response_bytes": 4194304,
+    // body_defaults: optional fixed JSON objects used if cases omit endpoint/session.
+    "body_defaults": {
+      // endpoint (default {}): service-specific endpoint JSON in the POST request.
+      "endpoint": {},
+      // session (default {}): service-specific session JSON in the POST request.
+      "session": {}
+    }
+    // Optional defaults omitted here: expected_http_status=200.
+    // timestamp is generated automatically per POST (Unix milliseconds); never configure a stale timestamp.
+  },
+  // v1.13.0: --source-url 'https://docs.qq.com/sheet/<ID>?tab=<TAB>'
+  // overrides doc_url/file_id/sheet_id/sheet_name for ONE run without editing this file.
+  // --no-feishu disables notification for that run; --check is optional.
+  // source: specify exactly one case provider (csv, json or tencent).
+  "source": {
+    // type (required): Tencent Docs spreadsheet MCP reader.
+    "type": "tencent",
+    // tencent: used only if source.type is "tencent"; absent for csv/json.
+    "tencent": {
+      // doc_url: authorized sheet URL, including the correct ?tab= value.
+      "doc_url": "https://docs.qq.com/sheet/EXAMPLE_FILE_ID?tab=EXAMPLE_TAB",
+      // file_id: currently keep aligned with doc_url; affects existing latest-failed-sse target hash.
+      "file_id": "EXAMPLEID123",
+      // sheet_id: explicit tab identifier; also used to build the Feishu source link.
+      "sheet_id": "EXAMPLETAB",
+      // range (default A1:H500): authorized A1 range; an Excel row is NOT a business case_id.
+      "range": "A1:H500",
+      // header_row (required for header mapping): absolute worksheet header row, 0 only for headerless subranges.
+      "header_row": 1,
+      // columns: map standardized case fields to headers or absolute Excel column letters.
+      "columns": {
+        // case_id (required): stable unique case identifier.
+        "case_id": "序号",
+        // scene (optional): human-readable business scenario for reporting.
+        "scene": "场景",
+        // category (optional): business classification.
+        "category": "类别",
+        // content (required): actual user utterance sent in the request.
+        "content": "语料",
+        // expected_keywords (required): public assertion rules, AND by default.
+        "expected_keywords": "判断依据（公共）",
+        // special_keywords (optional): extra assertions combined with the public requirements.
+        "special_keywords": "特殊判断依据",
+        // owner (optional metadata): organizational owner, currently not included in core results.
+        "owner": "研发负责人",
+        // deviceId (required): test device identifier; absent rows are skipped in Tencent mode.
+        "deviceId": "deviceId"
+      }
+      // sheet_name can be omitted when sheet_id is present; do NOT add empty sheet_name.
+    }
+    // For CSV/JSON instead, use only: "type":"csv" and "path":"assets/sample_cases.csv".
+    // Do NOT keep source.path when type=tencent; it is ignored.
+  },
+  // tencent_docs_auth: this member's own read-only Tencent Docs MCP authorization.
+  "tencent_docs_auth": {
+    // token: private Token; empty means resolve from TENCENT_DOCS_TOKEN environment variable.
+    "token": ""
+  },
+  // assertions: policy for evaluating returned SSE business data.
+  "assertions": {
+    // require_keywords (default true): fail cases with no expected assertion; keep explicit for safety.
+    "require_keywords": true
+    // default_mode is obsolete in v1.9.0; per-case match_mode controls all/any.
+  },
+  // reports: private local reporting and failed SSE retention limits.
+  "reports": {
+    // slow_token_threshold_ms (default 3000): slow first-business-frame threshold in milliseconds.
+    "slow_token_threshold_ms": 3000,
+    // failed_sse_max_total_bytes (default 134217728): cap for one batch's failed raw SSE (max 512MiB).
+    "failed_sse_max_total_bytes": 134217728
+    // dir defaults to "reports" and may be omitted if the same directory is desired.
+  },
+  // feishu: custom group bot notifications, separate from report outputs.
+  "feishu": {
+    // enabled: true by default; configure an authorized group Webhook and secret before a real probe.
+    "enabled": true,
+    // WEBHOOK_URL: authorized group bot Webhook; do not paste private values into public examples.
+    "WEBHOOK_URL": "",
+    // SECRET: Feishu group bot signing secret, NOT the business API signature.
+    "SECRET": "",
+    // keyword (default API拨测): must satisfy the group's custom bot keyword policy.
+    "keyword": "API拨测",
+    // notification_style: explicitly v2 for complete summary plus all failure-page cards.
+    "notification_style": "v2"
+    // timeout_seconds default 10; legacy include_failure_content/preview flags are ignored for privacy.
+    // WARNING: even if enabled, complete raw SSE is NEVER sent to the Feishu group.
+  },
+  // report_outputs: structured report persistence, separate from Feishu group notifications.
+  "report_outputs": [
+    {
+      // type: current supported writer "file"; cloud Bitable/Docs writers are NOT implemented.
+      "type": "file",
+      // enabled: write private JSON v5 and Markdown; must keep at least one writer enabled.
+      "enabled": true
+    }
+  ]
+}

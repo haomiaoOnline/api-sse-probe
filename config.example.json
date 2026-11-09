@@ -1,0 +1,54 @@
+{
+  "api": {
+    "url": "https://example.com/api/sse",
+    "headers": {
+      "powerkey": "",
+      "signature": ""
+    },
+    "require_done": true,
+    "max_event_bytes": 1048576,
+    "max_response_bytes": 4194304,
+    "body_defaults": {
+      "endpoint": {},
+      "session": {}
+    },
+    "response_header_timeout_seconds": 20
+  },
+  "source": {
+    "type": "csv",
+    "path": "assets/sample_cases.csv"
+  },
+  "assertions": {
+    "require_keywords": true
+  },
+  "reports": {
+    "dir": "reports",
+    "slow_token_threshold_ms": 3000,
+    "failed_sse_max_total_bytes": 134217728
+  },
+  "feishu": {
+    "enabled": true,
+    "keyword": "API拨测",
+    "notification_style": "v2"
+  },
+  "report_outputs": [
+    {
+      "type": "file",
+      "enabled": true
+    }
+  ],
+  "feishu_docs_auth": {
+    "credentials_file": "/path/to/private/feishu-app-credentials.txt"
+  },
+  "feishu_archive": {
+    "enabled": false,
+    "domain": "example.feishu.cn",
+    "document_titles": {
+      "TENCENT_FILE_ID": "原腾讯文档名"
+    }
+  },
+  "unknown_retry": {
+    "enabled": false,
+    "max_retries_per_case": 1
+  }
+}

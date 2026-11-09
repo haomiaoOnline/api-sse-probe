@@ -1,0 +1,37 @@
+# Runtime and private auth configuration
+.env
+.env.*
+!.env.example
+config.json
+config.local.json
+config.*.local.json
+config.*.local.*
+**/secrets/
+**/credentials/
+*.pem
+*.key
+*.p12
+*.pfx
+*.token
+*.credentials
+*.sqlite
+*.sqlite3
+*.db
+*.jsonl
+*.xlsx
+*.xls
+*.log
+*.csv
+!assets/sample_cases.csv
+*.sse
+!assets/sample_response.sse
+# Raw evidence, reports, transient data and caches
+reports/
+artifacts/
+**/monitor_log/
+**/监测记录/
+**/报告/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store

@@ -1,0 +1,42 @@
+{
+  "title": "RSS 情报｜图表实验",
+  "source": "rss-feishu-intelligence",
+  "status": "info",
+  "metrics": [
+    {
+      "label": "新增",
+      "value": "24条"
+    },
+    {
+      "label": "信源",
+      "value": "46个"
+    },
+    {
+      "label": "失败信源",
+      "value": "2个"
+    }
+  ],
+  "distribution": [
+    {
+      "label": "AI",
+      "value": 11
+    },
+    {
+      "label": "开源",
+      "value": 8
+    },
+    {
+      "label": "出海",
+      "value": 5
+    }
+  ],
+  "issues": [
+    {
+      "id": "源-3",
+      "name": "订阅同步",
+      "detail": "HTTP 超时，待下轮重试"
+    }
+  ],
+  "footer": "纯模拟数据；演示跨 Skill 通用消息模型",
+  "chart_type": "bar"
+}

@@ -1,0 +1,1 @@
+"""Tencent Docs adapter for SSE probe."""

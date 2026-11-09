@@ -1,0 +1,32 @@
+{
+  "title": "飞书图表｜监控报告 · 群协作版演示",
+  "source": "api-sse-probe",
+  "status": "error",
+  "chart_type": "none",
+  "source_url": "https://docs.qq.com/sheet/EXAMPLE_FILE_ID?tab=EXAMPLE_TAB",
+  "metrics": [
+    {
+      "label": "总数",
+      "value": "165"
+    },
+    {
+      "label": "通过",
+      "value": "123"
+    },
+    {
+      "label": "失败",
+      "value": "37"
+    },
+    {
+      "label": "异常",
+      "value": "5"
+    },
+    {
+      "label": "通过率",
+      "value": "74.55%"
+    }
+  ],
+  "distribution": [],
+  "issues": [],
+  "footer": "模拟数据 · 腾讯文档 · 总耗时4237.333s · 42条异常已分4页发送"
+}

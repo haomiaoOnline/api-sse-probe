@@ -1,0 +1,5 @@
+data: {"choices":[{"delta":{"content":{"data":{"text":"好嘞，正在为您打开湖南卫视直播～"},"type":"1"}}}]}
+
+data: {"choices":[{"delta":{"content":{"data":{"code":4145,"jsonHeader":"{\"skillId\":\"VIDEO30BFF29645B2B2E2EB6C44AE7\"}","jsonBody":"{\"params\":{\"videoStr\":\"视频技能\"}}" },"type":"3"}}}]}
+
+data: [DONE]

@@ -1,0 +1,52 @@
+{
+  "title": "API SSE 拨测｜图表实验",
+  "source": "api-sse-probe",
+  "status": "warning",
+  "metrics": [
+    {
+      "label": "用例",
+      "value": "165"
+    },
+    {
+      "label": "通过率",
+      "value": "96.36%"
+    },
+    {
+      "label": "平均首帧",
+      "value": "2.833s"
+    },
+    {
+      "label": "本轮耗时",
+      "value": "76m"
+    }
+  ],
+  "distribution": [
+    {
+      "label": "PASS",
+      "value": 159
+    },
+    {
+      "label": "FAIL",
+      "value": 4
+    },
+    {
+      "label": "ERROR",
+      "value": 2
+    }
+  ],
+  "issues": [
+    {
+      "id": "17",
+      "name": "媒资播放控制",
+      "detail": "缺失 deeplink · 首帧 1.819s"
+    },
+    {
+      "id": "50",
+      "name": "对话检索",
+      "detail": "HTTP 连接超时 · 未收到业务帧"
+    }
+  ],
+  "footer": "实验数据：不代表实际165条全量测试结果",
+  "chart_type": "donut",
+  "chart_center": "96.36%"
+}
